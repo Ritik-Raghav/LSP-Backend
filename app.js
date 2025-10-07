@@ -23,13 +23,25 @@ const app = express();
 // ✅ Security middleware
 app.use(helmet()); // adds secure headers
 
-// ✅ Enable CORS with config
+
+const allowedOrigins = [
+  "http://localhost:8080",      // React dev server
+  "https://nearbyhub.vercel.app/",  // production frontend
+];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "*",
-    credentials: true,
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // allow curl or mobile apps
+      if (allowedOrigins.indexOf(origin) === -1) {
+        return callback(new Error(`CORS policy: The origin ${origin} is not allowed.`), false);
+      }
+      return callback(null, true);
+    },
+    credentials: true,  // allow cookies / auth headers
   })
 );
+
 
 // ✅ Logging (only in development)
 if (process.env.NODE_ENV !== "production") {
