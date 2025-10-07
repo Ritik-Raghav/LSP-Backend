@@ -26,8 +26,8 @@ app.use(helmet()); // adds secure headers
 
 const allowedOrigins = [
   "http://localhost:8080",
-  "http://13.203.199.148:3000",   // React dev server
-  "https://nearbyhub.vercel.app/",  // production frontend
+  "https://13.203.199.148",   // React dev server
+  "https://nearbyhub.vercel.app",  // production frontend
 ];
 
 app.use(
