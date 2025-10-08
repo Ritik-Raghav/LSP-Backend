@@ -11,6 +11,7 @@ import publicRoutes from "./routes/public.route.js";
 import userRoutes from "./routes/user.route.js";
 import providerRoutes from "./routes/provider.route.js";
 import { userAuthMiddleware, providerAuthMiddleware } from "./middlewares/auth.js";
+import path from "path";
 
 // Load environment variables
 dotenv.config();
@@ -20,15 +21,24 @@ connectDB();
 
 const app = express();
 
-// ✅ Security middleware
-app.use(helmet()); // adds secure headers
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }, // ✅ allow images to load
+    contentSecurityPolicy: false, // ✅ disable default CSP (optional for local dev)
+  })
+);
+ // adds secure headers
 
 
 const allowedOrigins = [
+  "http://localhost:5173",
   "http://localhost:8080",
-  "https://13.203.199.148",   // React dev server
-  "https://nearbyhub.vercel.app",  // production frontend
+  "http://localhost:3000",
+  "https://13.203.199.148",
+  "https://nearbyhub.vercel.app"
 ];
+
 
 app.use(
   cors({
@@ -42,6 +52,8 @@ app.use(
     credentials: true,  // allow cookies / auth headers
   })
 );
+
+// app.use(cors()); // enable CORS for all routes
 
 
 // ✅ Logging (only in development)
@@ -59,7 +71,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 // ✅ Static file serving
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // ✅ API Routes
 app.use("/api/public", publicRoutes);
